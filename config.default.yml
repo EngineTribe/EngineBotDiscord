@@ -1,0 +1,19 @@
+bot:
+  token: 'Y0UR_B0T_T0K3N'
+  guild_ids:
+    - 10001  # Enabled guilds
+  level_post_channel_id: 10001
+  locale_ids:
+    EN: 10001
+    PT: 10001
+    ZH: 10001
+
+
+enginetribe_api:
+  host: "http://enginetribe.gq:30000"
+  api_key: "enginetribe"
+
+
+webhook: # To upload level files
+  host: "0.0.0.0"
+  port: 5586

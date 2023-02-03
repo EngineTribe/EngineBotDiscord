@@ -1,6 +1,7 @@
 from nextcord.ui import (
     TextInput,
-    Modal
+    Modal,
+
 )
 from nextcord import (
     Interaction
@@ -88,4 +89,55 @@ class ChangePassword(Modal):
             self.locale_model,
             timeout=5 * 60
         )
-        # TODO: Add password changing modal
+        self.password = TextInput(
+            placeholder=self.locale_model.PASSWORD,
+            label=self.locale_model.PASSWORD,
+            min_length=7,
+            max_length=30
+        )
+        self.confirm_password = TextInput(
+            placeholder=self.locale_model.CONFIRM_PASSWORD,
+            label=self.locale_model.CONFIRM_PASSWORD,
+            min_length=7,
+            max_length=30
+        )
+        self.add_item(self.password)
+        self.add_item(self.confirm_password)
+
+    async def callback(self, interaction: Interaction):
+        if self.password.value != self.confirm_password.value:
+            await interaction.response.send_message(
+                self.locale_model.PASSWORD_MISSMATCH
+            )
+            return
+        else:
+            try:
+                response_json = await api.update_password(
+                    user_identifier=interaction.user.id,
+                    im_id=interaction.user.id,
+                    password_hash=calculate_password_hash(
+                        self.password.value
+                    )
+                )
+                if 'success' in response_json:
+                    await interaction.send(
+                        f'✅ **{self.register_username.value}** {self.locale_model.REGISTER_SUCCESS}'
+                    )
+                else:
+                    if response_json['error_type'] == '035':
+                        await interaction.send(
+                            f'❌ {self.locale_model.ALREADY_REGISTERED}'
+                            f'{self.locale_model.YOUR_USERNAME_IS} **{response_json["username"]}**'
+                        )
+                    elif response_json['error_type'] == '036':
+                        await interaction.send(
+                            self.locale_model.USERNAME_ALREADY_TAKEN
+                        )
+                    else:
+                        await interaction.send(
+                            self.locale_model.UNKNOWN_ERROR
+                        )
+            except Exception as e:
+                await interaction.send(
+                    self.locale_model.UNKNOWN_ERROR + '\n' + str(e)
+                )

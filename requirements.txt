@@ -1,2 +1,6 @@
 nextcord
 aiohttp
+fastapi
+pydantic
+uvicorn
+pyyaml
