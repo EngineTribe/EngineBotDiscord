@@ -150,6 +150,27 @@ async def levels(
         )
 
 
+@bot.slash_command(
+    name="server_stats",
+    name_localizations=discord_localizations('SERVER_STATS'),
+    description="📊 Get server stats.",
+    description_localizations=discord_localizations('SERVER_STATS_DESC'),
+    guild_ids=GUILD_IDS
+)
+async def server_stats(interaction: Interaction):
+    locale_model = get_locale_model(interaction.user.roles)
+    server_stats = await api.server_stats()
+    await interaction.send(
+        f'{locale_model.SERVER_STATS_TITLE}\n'
+        f'> {locale_model.SERVER_STATS_OS_VERSION} {server_stats.os}\n'
+        f'> {locale_model.SERVER_STATS_PYTHON_VERSION} {server_stats.python}\n'
+        f'> {locale_model.SERVER_STATS_PLAYER_COUNT} {server_stats.player_count}\n'
+        f'> {locale_model.SERVER_STATS_LEVEL_COUNT} {server_stats.level_count}\n'
+        f'> {locale_model.SERVER_STATS_UPTIME} {int(server_stats.uptime / 60)} {locale_model.MINUTES}\n'
+        f'> {locale_model.SERVER_STATS_QPM} {server_stats.connection_per_minute}\n'
+    )
+
+
 app = FastAPI()
 
 

@@ -30,6 +30,16 @@ class LocaleModel(BaseModel):
     PASSWORD_CHANGE_SUCCESS: str
     CHANGE_PASSWORD: str
     CHANGE_PASSWORD_DESC: str
+    SERVER_STATS: str
+    SERVER_STATS_DESC: str
+    SERVER_STATS_TITLE: str
+    SERVER_STATS_OS_VERSION: str
+    SERVER_STATS_PYTHON_VERSION: str
+    SERVER_STATS_PLAYER_COUNT: str
+    SERVER_STATS_LEVEL_COUNT: str
+    SERVER_STATS_UPTIME: str
+    SERVER_STATS_QPM: str
+    MINUTES: str
 
 
 locales: dict[str, LocaleModel] = {}

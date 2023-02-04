@@ -2,6 +2,9 @@
 
 from aiohttp import request
 from config import *
+from models import (
+    ServerStats
+)
 
 
 async def user_register(
@@ -95,3 +98,14 @@ async def get_user_levels(
     ) as response:
         response_json = await response.json()
         return response_json['result'] if 'result' in response_json else []
+
+
+async def server_stats()->ServerStats:
+    async with request(
+            method='GET',
+            url=API_HOST + '/server_stats',
+            headers={
+                'User-Agent': 'EngineBot'
+            }
+    ) as response:
+        return ServerStats.parse_obj(await response.json())

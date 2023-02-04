@@ -13,3 +13,12 @@ class UploadRequestBody(BaseModel):
 class UploadResponseBody(BaseModel):
     status: str
     attachment_id: int | None = None
+
+
+class ServerStats(BaseModel):
+    os: str
+    python: str
+    player_count: int
+    level_count: int
+    uptime: int
+    connection_per_minute: int
