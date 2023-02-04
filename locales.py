@@ -9,6 +9,7 @@ class LocaleModel(BaseModel):
     alias: str
     REGISTER: str
     REGISTER_DESC: str
+    REGISTER_TITLE: str
     LEVELS: str
     LEVELS_DESC: str
     LEVELS_ARG1: str

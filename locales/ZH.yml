@@ -1,6 +1,7 @@
 alias: 'zh-CN'
 REGISTER: 'register'
 REGISTER_DESC: '📝 注册一个账号来开始享受游戏。'
+REGISTER_TITLE: '📝 注册'
 LEVELS: 'levels'
 LEVELS_DESC: '📊 获取自己的或者某个用户的关卡。'
 LEVELS_ARG1: "user_identifier"

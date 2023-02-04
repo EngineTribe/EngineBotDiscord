@@ -18,7 +18,7 @@ class Register(Modal):
     def __init__(self, locale_model):
         self.locale_model = locale_model
         super().__init__(
-            self.locale_model,
+            self.locale_model.REGISTER_TITLE,
             timeout=5 * 60
         )
         self.register_username = TextInput(
@@ -86,7 +86,7 @@ class ChangePassword(Modal):
     def __init__(self, locale_model):
         self.locale_model = locale_model
         super().__init__(
-            self.locale_model,
+            self.locale_model.PASSWORD,
             timeout=5 * 60
         )
         self.password = TextInput(

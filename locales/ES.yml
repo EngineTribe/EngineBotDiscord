@@ -1,6 +1,7 @@
 alias: 'es-ES'
 REGISTER: 'registrarse'
 REGISTER_DESC: '📝 Regístrate para poder empezar a jugar.'
+REGISTER_TITLE: '📝 Regístrate'
 LEVELS: 'niveles'
 LEVELS_DESC: '📊 Obtén niveles por ti mismo o por un usuario determinado.'
 LEVELS_ARG1: "identificador_de_usuario"

@@ -1,6 +1,7 @@
 alias: 'en-US'
 REGISTER: 'register'
 REGISTER_DESC: '📝 Register to start playing SMM:WE.'
+REGISTER_TITLE: '📝 Register'
 LEVELS: 'levels'
 LEVELS_DESC: '📊 Get levels by yourself or certain user.'
 LEVELS_ARG1: "user_identifier"
