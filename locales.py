@@ -40,6 +40,21 @@ class LocaleModel(BaseModel):
     SERVER_STATS_UPTIME: str
     SERVER_STATS_QPM: str
     MINUTES: str
+    PERMISSION: str
+    PERMISSION_DESC: str
+    PERMISSION_ARG1: str
+    PERMISSION_ARG1_DESC: str
+    PERMISSION_ARG2: str
+    PERMISSION_ARG2_DESC: str
+    PERMISSION_ARG3: str
+    PERMISSION_ARG3_DESC: str
+    PERMISSION_SUCCESS: str
+    PERMISSION_FAILED: str
+    RANDOM: str
+    RANDOM_DESC: str
+    RANDOM_ARG1: str
+    RANDOM_ARG1_DESC: str
+    AUTHOR: str
 
 
 locales: dict[str, LocaleModel] = {}

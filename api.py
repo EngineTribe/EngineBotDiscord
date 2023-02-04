@@ -118,10 +118,9 @@ async def update_permission(
 ):
     async with request(
             method='POST',
-            url=API_HOST + f'/user/{user_identifier}/update_permission',
+            url=API_HOST + f'/user/{user_identifier}/permission/{permission}',
             data={
                 'api_key': API_KEY,
-                'permission': permission,
                 'value': value
             },
             headers={
@@ -129,3 +128,20 @@ async def update_permission(
             }
     ) as response:
         return await response.json()
+
+
+async def random_level(
+        auth_code: str,
+        difficulty: str | None = None
+):
+    data = {'dificultad': difficulty, 'auth_code':auth_code} if difficulty is not None else {'auth_code': auth_code}
+    async with request(
+            method='POST',
+            url=API_HOST + '/stage/random',
+            data=data,
+            headers={
+                'User-Agent': 'EngineBot'
+            }
+    ) as response:
+        print(await response.json())
+        return (await response.json())['result']

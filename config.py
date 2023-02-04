@@ -2,6 +2,8 @@ import yaml
 
 _config = yaml.safe_load(open('config.yml'))
 
+WEBSITE_URL = "https://web.enginetribe.gq/"
+
 BOT_TOKEN = _config['bot']['token']
 GUILD_IDS = _config['bot']['guild_ids']
 LOCALE_IDS = _config['bot']['locale_ids']

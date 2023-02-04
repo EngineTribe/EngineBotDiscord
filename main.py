@@ -161,15 +161,112 @@ async def levels(
 )
 async def server_stats(interaction: Interaction):
     locale_model = get_locale_model(interaction.user.roles)
-    server_stats = await api.server_stats()
+    stats = await api.server_stats()
     await interaction.send(
         f'{locale_model.SERVER_STATS_TITLE}\n'
-        f'> {locale_model.SERVER_STATS_OS_VERSION} {server_stats.os}\n'
-        f'> {locale_model.SERVER_STATS_PYTHON_VERSION} {server_stats.python}\n'
-        f'> {locale_model.SERVER_STATS_PLAYER_COUNT} {server_stats.player_count}\n'
-        f'> {locale_model.SERVER_STATS_LEVEL_COUNT} {server_stats.level_count}\n'
-        f'> {locale_model.SERVER_STATS_UPTIME} {int(server_stats.uptime / 60)} {locale_model.MINUTES}\n'
-        f'> {locale_model.SERVER_STATS_QPM} {server_stats.connection_per_minute}\n'
+        f'> {locale_model.SERVER_STATS_OS_VERSION} {stats.os}\n'
+        f'> {locale_model.SERVER_STATS_PYTHON_VERSION} {stats.python}\n'
+        f'> {locale_model.SERVER_STATS_PLAYER_COUNT} {stats.player_count}\n'
+        f'> {locale_model.SERVER_STATS_LEVEL_COUNT} {stats.level_count}\n'
+        f'> {locale_model.SERVER_STATS_UPTIME} {int(stats.uptime / 60)} {locale_model.MINUTES}\n'
+        f'> {locale_model.SERVER_STATS_QPM} {stats.connection_per_minute}\n'
+    )
+
+
+@bot.slash_command(
+    name="permission",
+    name_localizations=discord_localizations('PERMISSION'),
+    description="🔒 Change user's permission.",
+    description_localizations=discord_localizations('PERMISSION_DESC'),
+    guild_ids=GUILD_IDS
+)
+async def update_permission(
+        interaction: Interaction,
+        user_identifier: str = SlashOption(
+            name="user_identifier",
+            name_localizations=discord_localizations('PERMISSION_ARG1'),
+            description="👤 User's username or Discord ID",
+            description_localizations=discord_localizations('PERMISSION_ARG1_DESC'),
+            required=True
+        ),
+        permission: str = SlashOption(
+            name="permission",
+            name_localizations=discord_localizations('PERMISSION_ARG2'),
+            description="🔒 Permission to change",
+            description_localizations=discord_localizations('PERMISSION_ARG2_DESC'),
+            required=True,
+            choices={
+                'Stage Mod': 'mod',
+                'Booster': 'booster',
+                'Member': 'valid',
+                'Banned': 'banned',
+                'Administrator': 'admin'
+            }
+        ),
+        value: bool = SlashOption(
+            name="value",
+            name_localizations=discord_localizations('PERMISSION_ARG3'),
+            description="🔒 Permission value",
+            description_localizations=discord_localizations('PERMISSION_ARG3_DESC'),
+            required=True,
+            choices={
+                'True': True,
+                'False': False
+            }
+        )
+):
+    locale_model = get_locale_model(interaction.user.roles)
+    response_json = await api.update_permission(
+        user_identifier=user_identifier,
+        permission=permission,
+        value=value
+    )
+    if 'error_type' in response_json:
+        await interaction.send(
+            locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} {response_json['message']}"
+        )
+    else:
+        await interaction.send(
+            locale_model.PERMISSION_SUCCESS
+        )
+
+
+@bot.slash_command(
+    name="random",
+    name_localizations=discord_localizations('RANDOM'),
+    description="🎲 Get random level.",
+    description_localizations=discord_localizations('RANDOM_DESC'),
+    guild_ids=GUILD_IDS
+)
+async def random_level(
+        interaction: Interaction,
+        difficulty: Optional[str] = SlashOption(
+            name="difficulty",
+            name_localizations=discord_localizations('RANDOM_ARG1'),
+            description="🎲 Level difficulty",
+            description_localizations=discord_localizations('RANDOM_ARG1_DESC'),
+            required=False,
+            choices={
+                'Easy': '0',
+                'Normal': '1',
+                'Expert': '2',
+                'Super Expert': '3'
+            }
+        )
+):
+    locale_model = get_locale_model(interaction.user.roles)
+    auth_code = await login_session(interaction.user.roles)
+    level = await api.random_level(auth_code=auth_code, difficulty=difficulty)
+    clears: int = level['victorias']
+    attempts: int = level['intentos']
+    clear_rate: str = str(round(clears / attempts * 100, 2)) + '%'
+    await interaction.send(
+        f"**{level['name']}**{' ✨' if level['featured'] == 1 else ''}\n"
+        f"> 👤 {locale_model.AUTHOR} **{level['author']}**\n"
+        f"> ID: `{level['id']}`\n"
+        f"> 🏷️ {level['etiquetas']}\n"
+        f"> ❤️ {level['likes']} | 💙 {level['dislikes']}\n"
+        f"> ⛳ {clears} / 🎮 {attempts} ({clear_rate})\n"
     )
 
 
@@ -239,7 +336,8 @@ async def set_rich_presence_timer():
         await bot.change_presence(
             activity=Activity(
                 type=activity_type,
-                name=name
+                name=name,
+                url=WEBSITE_URL
             ),
             status=status
         )
@@ -264,6 +362,7 @@ async def startup():
 
 @app.on_event('shutdown')
 async def shutdown():
+    await bot.wait_until_ready()
     await bot.change_presence(activity=None, status=Status.offline)
     await bot.close()
 
