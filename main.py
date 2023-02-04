@@ -6,7 +6,9 @@ from nextcord import (
     SlashOption,
     Activity,
     ActivityType,
-    Status
+    Status,
+    Member,
+    Role
 )
 from nextcord.ext import commands
 from typing import Optional
@@ -169,6 +171,26 @@ async def server_stats(interaction: Interaction):
         f'> {locale_model.SERVER_STATS_UPTIME} {int(server_stats.uptime / 60)} {locale_model.MINUTES}\n'
         f'> {locale_model.SERVER_STATS_QPM} {server_stats.connection_per_minute}\n'
     )
+
+
+@bot.event
+async def on_member_update(before: Member, after: Member):
+    def check_role(roles: list[Role], role_id: int):
+        for role in roles:
+            if role.id == role_id:
+                return True
+        return False
+
+    has_stage_mod_role = check_role(after.roles, STAGE_MODERATOR_ROLE_ID)
+    has_booster_role = check_role(after.roles, BOOSTER_ROLE_ID)
+    has_member_role = check_role(after.roles, MEMBER_ROLE_ID)
+    user_identifier = str(after.id)
+    for permission, value in [('mod', has_stage_mod_role), ('booster', has_booster_role), ('valid', has_member_role)]:
+        await api.update_permission(
+            user_identifier=user_identifier,
+            permission=permission,
+            value=value
+        )
 
 
 app = FastAPI()

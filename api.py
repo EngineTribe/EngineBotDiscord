@@ -100,7 +100,7 @@ async def get_user_levels(
         return response_json['result'] if 'result' in response_json else []
 
 
-async def server_stats()->ServerStats:
+async def server_stats() -> ServerStats:
     async with request(
             method='GET',
             url=API_HOST + '/server_stats',
@@ -109,3 +109,23 @@ async def server_stats()->ServerStats:
             }
     ) as response:
         return ServerStats.parse_obj(await response.json())
+
+
+async def update_permission(
+        user_identifier: str,
+        permission: str,
+        value: bool
+):
+    async with request(
+            method='POST',
+            url=API_HOST + f'/user/{user_identifier}/update_permission',
+            data={
+                'api_key': API_KEY,
+                'permission': permission,
+                'value': value
+            },
+            headers={
+                'User-Agent': 'EngineBot'
+            }
+    ) as response:
+        return await response.json()

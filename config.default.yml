@@ -7,6 +7,9 @@ bot:
     EN: 10001
     PT: 10001
     ZH: 10001
+  booster_role_id: 0
+  stage_moderator_role_id: 0
+  member_role_id: 0
 
 
 enginetribe_api:
