@@ -53,7 +53,7 @@ async def on_ready():
 async def register(interaction: Interaction):
     locale_model = get_locale_model(interaction.user.roles)
     user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' not in user_info_response:
+    if 'error_type' in user_info_response:
         await interaction.response.send_modal(
             Register(
                 locale_model=locale_model
@@ -75,7 +75,7 @@ async def register(interaction: Interaction):
 async def change_password(interaction: Interaction):
     locale_model = get_locale_model(interaction.user.roles)
     user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' not in user_info_response:
+    if 'error_type' in user_info_response:
         await interaction.send(
             locale_model.NOT_REGISTERED
         )
