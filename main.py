@@ -3,7 +3,10 @@ from nextcord import (
     Interaction,
     File,
     Embed,
-    SlashOption
+    SlashOption,
+    Activity,
+    ActivityType,
+    Status
 )
 from nextcord.ext import commands
 from typing import Optional
@@ -185,17 +188,41 @@ async def upload_level(
 
 
 async def set_rich_presence_timer():
-    delay: int = 10
-    while True:
-        await asyncio.sleep(delay)
+    async def change_presence(
+            activity_type: ActivityType,
+            name: str,
+            status: Status = Status.online
+    ):
         await bot.change_presence(
-            
+            activity=Activity(
+                type=activity_type,
+                name=name
+            ),
+            status=status
         )
+        await asyncio.sleep(delay)
+
+    delay: int = 30
+    await bot.wait_until_ready()
+    while True:
+        await change_presence(ActivityType.competing, "SMM:WE v3.3.3")
+        await change_presence(ActivityType.playing, "Creating awesome levels in SMM:WE")
+        await change_presence(ActivityType.watching, "How nice the Staff is UwU")
+        await change_presence(ActivityType.competing, "Engine Bot vs Coursebot", Status.do_not_disturb)
+        await change_presence(ActivityType.watching, f"{bot.get_guild(GUILD_IDS[0]).member_count} members")
+
 
 @app.on_event('startup')
 async def startup():
     print('Starting Discord bot...')
     asyncio.create_task(bot.start(BOT_TOKEN))
+    asyncio.create_task(set_rich_presence_timer())
+
+
+@app.on_event('shutdown')
+async def shutdown():
+    await bot.change_presence(activity=None, status=Status.offline)
+    await bot.close()
 
 
 if __name__ == '__main__':
