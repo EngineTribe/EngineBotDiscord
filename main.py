@@ -2,9 +2,11 @@ import nextcord
 from nextcord import (
     Interaction,
     File,
-    Embed
+    Embed,
+    SlashOption
 )
 from nextcord.ext import commands
+from typing import Optional
 
 import asyncio
 
@@ -23,7 +25,9 @@ from activates import (
     Register
 )
 from locales import (
-    get_locale_model
+    get_locale_model,
+    login_session,
+    discord_localizations
 )
 
 bot = commands.Bot(intents=nextcord.Intents.all(), command_prefix='/')
@@ -35,14 +39,16 @@ async def on_ready():
 
 
 @bot.slash_command(
-    description="Register in SMM:WE (Engine Tribe)",
+    name="register",
+    name_localizations=discord_localizations('REGISTER'),
+    description="📝 Register to start playing SMM:WE.",
+    description_localizations=discord_localizations('REGISTER_DESC'),
     guild_ids=GUILD_IDS,
-
 )
 async def register(interaction: Interaction):
     locale_model = get_locale_model(interaction.user.roles)
     user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' in user_info_response:
+    if 'error_type' not in user_info_response:
         await interaction.response.send_modal(
             Register(
                 locale_model=locale_model
@@ -55,33 +61,90 @@ async def register(interaction: Interaction):
 
 
 @bot.slash_command(
-    description="Change password",
+    name="change_password",
+    name_localizations=discord_localizations('CHANGE_PASSWORD'),
+    description="🔐 Change your password.",
+    description_localizations=discord_localizations('CHANGE_PASSWORD_DESC'),
     guild_ids=GUILD_IDS,
 )
-async def password(interaction: Interaction):
+async def change_password(interaction: Interaction):
     locale_model = get_locale_model(interaction.user.roles)
     user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' in user_info_response:
+    if 'error_type' not in user_info_response:
         await interaction.send(
             locale_model.NOT_REGISTERED
         )
     else:
-        pass  # TODO
+        await interaction.send(
+            locale_model.UNKNOWN_ERROR
+        )
 
 
 @bot.slash_command(
-    description="Get user's levels",
-    guild_ids=GUILD_IDS,
+    name="levels",
+    name_localizations=discord_localizations('LEVELS'),
+    description="📊 Get levels by yourself or certain user.",
+    description_localizations=discord_localizations('LEVELS_DESC'),
+    guild_ids=GUILD_IDS
 )
-async def stats(interaction: Interaction):
+async def levels(
+        interaction: Interaction,
+        user_identifier: Optional[str] = SlashOption(
+            name="user_identifier",
+            name_localizations=discord_localizations('LEVELS_ARG1'),
+            description="User's username or Discord ID",
+            description_localizations=discord_localizations('LEVELS_ARG1_DESC'),
+            required=False
+        )
+):
     locale_model = get_locale_model(interaction.user.roles)
-    user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' in user_info_response:
+    user_identifier: str = str(interaction.user.id) if user_identifier is None else user_identifier
+    response_texts: list[str] = []
+    user_info_response = await api.user_info(
+        user_identifier=user_identifier
+    )
+    if 'result' not in user_info_response:
         await interaction.send(
             locale_model.NOT_REGISTERED
         )
     else:
-        pass
+        user_info = user_info_response['result']
+        user = bot.get_user(int(user_info['im_id']))
+        response_texts.append(
+            f"**{user_info['username']}** {user.mention if user is not None else ''}"
+            + f'{f"**{locale_model.STAGE_MODERATOR}**" if user_info["is_mod"] else ""}'
+            + f'{f"**{locale_model.BOOSTER}**" if user_info["is_booster"] else ""}'
+        )
+        response_texts.append(
+            f"{locale_model.UPLOADS}{user_info['uploads']}"
+        )
+        response_texts.append(
+            locale_model.LOADING
+        )
+
+        message = (await interaction.send(
+            content='\n'.join(response_texts)
+        ))
+        response_texts.pop()
+
+        username = user_info['username']
+        auth_code = await login_session(interaction.user.roles)
+        levels = await api.get_user_levels(
+            username=username,
+            auth_code=auth_code,
+            rows_perpage=user_info['uploads'] + 1
+        )
+        for level in levels:
+            response_texts.append(
+                f"> {level['name']} "
+                f"{'✨ ' if level['featured'] == 1 else ''}"
+                f"`{level['id']}` | "
+                f"❤️ {level['likes']} "
+                f"💙 {level['dislikes']}"
+            )
+        await message.edit(
+            content='\n'.join(response_texts)
+        )
 
 
 app = FastAPI()
@@ -92,10 +155,7 @@ async def upload_level(
         request_body: UploadRequestBody
 ) -> UploadResponseBody:
     try:
-        embed = Embed(title=request_body.level_name)
-        embed.add_field(name='Author', value=request_body.level_author)
-        embed.add_field(name='ID', value=request_body.level_id)
-        embed.add_field(name='Etiquetas', value=request_body.level_tags)
+        author = bot.get_user(request_body.level_author_im_id)
         message = await (bot.get_channel(LEVEL_POST_CHANNEL_ID)).send(
             files=[
                 File(
@@ -104,7 +164,13 @@ async def upload_level(
                 )
             ],
             embeds=[
-                embed
+                Embed(
+                    title=request_body.level_name,
+                    description=f'Author: **{request_body.level_author}** '
+                                f'{author.mention if author is not None else ""}\n'
+                                f'ID: `{request_body.level_id}`\n'
+                                f'Etiquetas: `{request_body.level_tags}`'
+                )
             ]
         )
         return UploadResponseBody(
@@ -118,8 +184,17 @@ async def upload_level(
         )
 
 
+async def set_rich_presence_timer():
+    delay: int = 10
+    while True:
+        await asyncio.sleep(delay)
+        await bot.change_presence(
+            
+        )
+
 @app.on_event('startup')
 async def startup():
+    print('Starting Discord bot...')
     asyncio.create_task(bot.start(BOT_TOKEN))
 
 

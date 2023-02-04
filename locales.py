@@ -1,24 +1,18 @@
 from pydantic import BaseModel
 import os
 import yaml
-from config import LOCALE_IDS
-
-locales: dict[str, dict] = {}
-
-for locale_file in os.listdir('locales'):
-    with open(f'locales/{locale_file}') as file:
-        locales[locale_file.replace('.yml', '')] = yaml.safe_load(file)
-
-
-def get_locale_model(roles: list):
-    role_ids = map(lambda role: role.id, roles)
-    for locale in LOCALE_IDS:
-        if LOCALE_IDS[locale] in role_ids:
-            return LocaleModel.parse_obj(locales[locale])
-    return LocaleModel.parse_obj(locales['ES'])
+from config import LOCALE_IDS, API_TOKENS
+from api import login_session as api_login_session
 
 
 class LocaleModel(BaseModel):
+    alias: str
+    REGISTER: str
+    REGISTER_DESC: str
+    LEVELS: str
+    LEVELS_DESC: str
+    LEVELS_ARG1: str
+    LEVELS_ARG1_DESC: str
     USERNAME: str
     PASSWORD: str
     CONFIRM_PASSWORD: str
@@ -29,3 +23,40 @@ class LocaleModel(BaseModel):
     USERNAME_ALREADY_TAKEN: str
     UNKNOWN_ERROR: str
     NOT_REGISTERED: str
+    UPLOADS: str
+    STAGE_MODERATOR: str
+    BOOSTER: str
+    LOADING: str
+    PASSWORD_CHANGE_SUCCESS: str
+    CHANGE_PASSWORD: str
+    CHANGE_PASSWORD_DESC: str
+
+
+locales: dict[str, LocaleModel] = {}
+
+for locale_file in os.listdir('locales'):
+    with open(f'locales/{locale_file}') as file:
+        locales[locale_file.replace('.yml', '')] = LocaleModel.parse_obj(yaml.safe_load(file))
+
+
+def get_locale_model(roles: list) -> LocaleModel:
+    role_ids = map(lambda role: role.id, roles)
+    for locale in LOCALE_IDS:
+        if LOCALE_IDS[locale] in role_ids:
+            return locales[locale]
+    return locales['ES']
+
+
+async def login_session(roles: list) -> str:
+    role_ids = map(lambda role: role.id, roles)
+    for locale in API_TOKENS:
+        if API_TOKENS[locale] in role_ids:
+            return await api_login_session(API_TOKENS[locale])
+    return await api_login_session(API_TOKENS['ES'])
+
+
+def discord_localizations(word: str) -> dict[str:str]:
+    localizations = {}
+    for locale in locales:
+        localizations[locales[locale].alias] = locales[locale].__getattribute__(word)
+    return localizations

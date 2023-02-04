@@ -65,7 +65,7 @@ class Register(Modal):
                 else:
                     if response_json['error_type'] == '035':
                         await interaction.send(
-                            f'❌ {self.locale_model.ALREADY_REGISTERED}'
+                            f'{self.locale_model.ALREADY_REGISTERED}'
                             f'{self.locale_model.YOUR_USERNAME_IS} **{response_json["username"]}**'
                         )
                     elif response_json['error_type'] == '036':
@@ -121,17 +121,12 @@ class ChangePassword(Modal):
                 )
                 if 'success' in response_json:
                     await interaction.send(
-                        f'✅ **{self.register_username.value}** {self.locale_model.REGISTER_SUCCESS}'
+                        self.locale_model.PASSWORD_CHANGE_SUCCESS
                     )
                 else:
-                    if response_json['error_type'] == '035':
+                    if response_json['error_type'] == '006':
                         await interaction.send(
-                            f'❌ {self.locale_model.ALREADY_REGISTERED}'
-                            f'{self.locale_model.YOUR_USERNAME_IS} **{response_json["username"]}**'
-                        )
-                    elif response_json['error_type'] == '036':
-                        await interaction.send(
-                            self.locale_model.USERNAME_ALREADY_TAKEN
+                            self.locale_model.UNKNOWN_USER
                         )
                     else:
                         await interaction.send(

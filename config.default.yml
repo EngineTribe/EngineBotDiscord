@@ -12,6 +12,11 @@ bot:
 enginetribe_api:
   host: "http://enginetribe.gq:30000"
   api_key: "enginetribe"
+  tokens:
+    EN: "000001"
+    ES: "000002"
+    PT: "000003"
+    ZH: "000004"
 
 
 webhook: # To upload level files

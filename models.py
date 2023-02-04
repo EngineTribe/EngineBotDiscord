@@ -6,6 +6,7 @@ class UploadRequestBody(BaseModel):
     level_id: str
     level_name: str
     level_author: str
+    level_author_im_id: int
     level_tags: str
 
 

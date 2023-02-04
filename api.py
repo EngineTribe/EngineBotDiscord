@@ -17,6 +17,9 @@ async def user_register(
                 'password_hash': password_hash,
                 'im_id': im_id,
                 'api_key': API_KEY
+            },
+            headers={
+                'User-Agent': 'EngineBot'
             }
     ) as response:
         return await response.json()
@@ -34,6 +37,9 @@ async def update_password(
                 'password_hash': password_hash,
                 'api_key': API_KEY,
                 'im_id': im_id
+            },
+            headers={
+                'User-Agent': 'EngineBot'
             }
     ) as response:
         return await response.json()
@@ -45,5 +51,47 @@ async def user_info(
     async with request(
             method='POST',
             url=API_HOST + f'/user/{user_identifier}/info',
+            headers={
+                'User-Agent': 'EngineBot'
+            }
     ) as response:
         return await response.json()
+
+
+async def login_session(
+        token: str
+) -> str:
+    async with request(
+            method='POST',
+            url=API_HOST + '/user/login',
+            data={
+                'token': token,
+                'alias': 'EngineBot',
+                'password': '0'
+            },
+            headers={
+                'User-Agent': 'EngineBot'
+            }
+    ) as response:
+        return (await response.json())['auth_code']
+
+
+async def get_user_levels(
+        username: str,
+        auth_code: str,
+        rows_perpage: int = 10
+) -> list[dict[str, str]]:
+    async with request(
+            method='POST',
+            url=API_HOST + '/stages/detailed_search',
+            data={
+                'auth_code': auth_code,
+                'rows_perpage': rows_perpage,
+                'author': username
+            },
+            headers={
+                'User-Agent': 'EngineBot'
+            }
+    ) as response:
+        response_json = await response.json()
+        return response_json['result'] if 'result' in response_json else []

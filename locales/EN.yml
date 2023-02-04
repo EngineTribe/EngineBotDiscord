@@ -1,3 +1,10 @@
+alias: 'en-US'
+REGISTER: 'register'
+REGISTER_DESC: '📝 Register to start playing SMM:WE.'
+LEVELS: 'levels'
+LEVELS_DESC: '📊 Get levels by yourself or certain user.'
+LEVELS_ARG1: "user_identifier"
+LEVELS_ARG1_DESC: "👤 User's username or Discord ID"
 USERNAME: '👤 Username'
 PASSWORD: '🔐 Password'
 CONFIRM_PASSWORD: '🔐 Confirm password'
@@ -8,3 +15,11 @@ YOUR_USERNAME_IS: 'Your username is:'
 USERNAME_ALREADY_TAKEN: '❌ Username is already taken.'
 UNKNOWN_ERROR: '❌ Unknown error.'
 NOT_REGISTERED: '❌ You are not registered yet.'
+UPLOADS: "📤 Uploads: "
+STAGE_MODERATOR: "👮 Stage Moderator"
+BOOSTER: "🚀 Booster"
+LOADING: "Loading..."
+PASSWORD_CHANGE_SUCCESS: "✅ Password changed successfully."
+UNKNOWN_USER: "❌ Unknown user."
+CHANGE_PASSWORD: "change_password"
+CHANGE_PASSWORD_DESC: "🔐 Change your password."

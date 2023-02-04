@@ -1,3 +1,10 @@
+alias: 'es-ES'
+REGISTER: 'registrarse'
+REGISTER_DESC: '📝 Regístrate para poder empezar a jugar.'
+LEVELS: 'niveles'
+LEVELS_DESC: '📊 Obtén niveles por ti mismo o por un usuario determinado.'
+LEVELS_ARG1: "identificador_de_usuario"
+LEVELS_ARG1_DESC: "👤 Nombre de usuario del usuario o ID de Discord"
 USERNAME: '👤 Nombre de usuario'
 PASSWORD: '🔐 Contraseña'
 CONFIRM_PASSWORD: '🔐 Confirmar contraseña'
@@ -8,3 +15,11 @@ YOUR_USERNAME_IS: 'Tu nombre de usuario es:'
 USERNAME_ALREADY_TAKEN: '❌ El nombre de usuario ya está en uso.'
 UNKNOWN_ERROR: '❌ Error desconocido.'
 NOT_REGISTERED: '❌ Aún no te has registrado.'
+UPLOADS: "📤 Subidas: "
+STAGE_MODERATOR: "👮‍️ Moderador de escenario"
+BOOSTER: "🚀 Booster"
+LOADING: "Cargando..."
+PASSWORD_CHANGE_SUCCESS: "✅ Contraseña cambiada con éxito."
+UNKNOWN_USER: "❌ Usuario desconocido."
+CHANGE_PASSWORD: "cambiar_contrasena"
+CHANGE_PASSWORD_DESC: "🔐 Cambia tu contraseña."

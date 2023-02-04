@@ -9,6 +9,7 @@ LEVEL_POST_CHANNEL_ID = _config['bot']['level_post_channel_id']
 
 API_HOST = _config['enginetribe_api']['host']
 API_KEY = _config['enginetribe_api']['api_key']
+API_TOKENS = _config['enginetribe_api']['tokens']
 
 WEBHOOK_HOST = _config['webhook']['host']
 WEBHOOK_PORT = _config['webhook']['port']
