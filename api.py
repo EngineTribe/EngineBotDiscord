@@ -134,7 +134,7 @@ async def random_level(
         auth_code: str,
         difficulty: str | None = None
 ):
-    data = {'dificultad': difficulty, 'auth_code':auth_code} if difficulty is not None else {'auth_code': auth_code}
+    data = {'dificultad': difficulty, 'auth_code': auth_code} if difficulty is not None else {'auth_code': auth_code}
     async with request(
             method='POST',
             url=API_HOST + '/stage/random',
@@ -144,4 +144,21 @@ async def random_level(
             }
     ) as response:
         print(await response.json())
+        return (await response.json())['result']
+
+
+async def query_level(
+        auth_code: str,
+        level_id: str
+):
+    async with request(
+            method='POST',
+            url=API_HOST + f'/stage/{level_id}',
+            data={
+                'auth_code': auth_code
+            },
+            headers={
+                'User-Agent': 'EngineBot'
+            }
+    ) as response:
         return (await response.json())['result']

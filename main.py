@@ -231,6 +231,20 @@ async def update_permission(
         )
 
 
+def level_details_to_string(level: dict, locale_model) -> str:
+    clears: int = level['victorias']
+    attempts: int = level['intentos']
+    clear_rate: str = str(round(clears / attempts * 100, 2)) + '%'
+    return (
+        f"**{level['name']}**{' ✨' if level['featured'] == 1 else ''}\n"
+        f"> 👤 {locale_model.AUTHOR} **{level['author']}**\n"
+        f"> ID: `{level['id']}`\n"
+        f"> 🏷️ {level['etiquetas']}\n"
+        f"> ❤️ {level['likes']} | 💙 {level['dislikes']}\n"
+        f"> ⛳ {clears} / 🎮 {attempts} ({clear_rate})\n"
+    )
+
+
 @bot.slash_command(
     name="random",
     name_localizations=discord_localizations('RANDOM'),
@@ -257,16 +271,33 @@ async def random_level(
     locale_model = get_locale_model(interaction.user.roles)
     auth_code = await login_session(interaction.user.roles)
     level = await api.random_level(auth_code=auth_code, difficulty=difficulty)
-    clears: int = level['victorias']
-    attempts: int = level['intentos']
-    clear_rate: str = str(round(clears / attempts * 100, 2)) + '%'
     await interaction.send(
-        f"**{level['name']}**{' ✨' if level['featured'] == 1 else ''}\n"
-        f"> 👤 {locale_model.AUTHOR} **{level['author']}**\n"
-        f"> ID: `{level['id']}`\n"
-        f"> 🏷️ {level['etiquetas']}\n"
-        f"> ❤️ {level['likes']} | 💙 {level['dislikes']}\n"
-        f"> ⛳ {clears} / 🎮 {attempts} ({clear_rate})\n"
+        level_details_to_string(level, locale_model)
+    )
+
+
+@bot.slash_command(
+    name="query",
+    name_localizations=discord_localizations('QUERY'),
+    description="🔍 Query level.",
+    description_localizations=discord_localizations('QUERY_DESC'),
+    guild_ids=GUILD_IDS
+)
+async def query_level(
+        interaction: Interaction,
+        level_id: str = SlashOption(
+            name="level_id",
+            name_localizations=discord_localizations('QUERY_ARG1'),
+            description="🔍 Level ID",
+            description_localizations=discord_localizations('QUERY_ARG1_DESC'),
+            required=True
+        )
+):
+    locale_model = get_locale_model(interaction.user.roles)
+    auth_code = await login_session(interaction.user.roles)
+    level = await api.query_level(auth_code=auth_code, level_id=level_id)
+    await interaction.send(
+        level_details_to_string(level, locale_model)
     )
 
 

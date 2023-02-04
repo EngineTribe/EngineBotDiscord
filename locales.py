@@ -55,6 +55,10 @@ class LocaleModel(BaseModel):
     RANDOM_ARG1: str
     RANDOM_ARG1_DESC: str
     AUTHOR: str
+    QUERY: str
+    QUERY_DESC: str
+    QUERY_ARG1: str
+    QUERY_ARG1_DESC: str
 
 
 locales: dict[str, LocaleModel] = {}
