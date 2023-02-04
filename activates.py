@@ -74,7 +74,8 @@ class Register(Modal):
                         )
                     else:
                         await interaction.send(
-                            self.locale_model.UNKNOWN_ERROR
+                            self.locale_model.UNKNOWN_ERROR + '\n' +
+                            f"{response_json['error_type']} - {response_json['message']}"
                         )
             except Exception as e:
                 await interaction.send(
@@ -130,7 +131,8 @@ class ChangePassword(Modal):
                         )
                     else:
                         await interaction.send(
-                            self.locale_model.UNKNOWN_ERROR
+                            self.locale_model.UNKNOWN_ERROR + '\n' +
+                            f"{response_json['error_type']} - {response_json['message']}"
                         )
             except Exception as e:
                 await interaction.send(
