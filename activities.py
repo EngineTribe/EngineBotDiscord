@@ -15,7 +15,7 @@ from utils import (
 
 
 class Register(Modal):
-    def __init__(self, locale_model):
+    def __init__(self, locale_model: LocaleModel):
         self.locale_model = locale_model
         super().__init__(
             self.locale_model.REGISTER_TITLE,
@@ -47,6 +47,16 @@ class Register(Modal):
         if self.register_password.value != self.register_confirm_password.value:
             await interaction.response.send_message(
                 self.locale_model.PASSWORD_MISSMATCH
+            )
+            return
+        elif not self.register_username.value.isalnum():
+            await interaction.response.send_message(
+                self.locale_model.ALPHANUMERIC_USERNAME
+            )
+            return
+        elif not self.register_password.value.isalnum():
+            await interaction.response.send_message(
+                self.locale_model.ALPHANUMERIC_PASSWORD
             )
             return
         else:
@@ -84,7 +94,7 @@ class Register(Modal):
 
 
 class ChangePassword(Modal):
-    def __init__(self, locale_model):
+    def __init__(self, locale_model: LocaleModel):
         self.locale_model = locale_model
         super().__init__(
             self.locale_model.PASSWORD,
@@ -109,6 +119,11 @@ class ChangePassword(Modal):
         if self.password.value != self.confirm_password.value:
             await interaction.response.send_message(
                 self.locale_model.PASSWORD_MISSMATCH
+            )
+            return
+        elif not self.password.value.isalnum():
+            await interaction.response.send_message(
+                self.locale_model.ALPHANUMERIC_PASSWORD
             )
             return
         else:

@@ -66,6 +66,8 @@ class LocaleModel(BaseModel):
     UNBAN_DESC: str
     BAN_SUCCESS: str
     UNBAN_SUCCESS: str
+    ALPHANUMERIC_USERNAME: str
+    ALPHANUMERIC_PASSWORD: str
 
 
 locales: dict[str, LocaleModel] = {}
