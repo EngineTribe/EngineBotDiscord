@@ -470,7 +470,7 @@ async def shutdown():
 
 
 def run():
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     webhook_server = uvicorn.Server(
         config=uvicorn.Config(
             app,
