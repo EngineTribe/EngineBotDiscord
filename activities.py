@@ -49,12 +49,12 @@ class Register(Modal):
                 self.locale_model.PASSWORD_MISSMATCH
             )
             return
-        elif not self.register_username.value.isalnum():
+        elif (not self.register_username.value.isalnum()) or ' ' in self.register_username.value:
             await interaction.response.send_message(
                 self.locale_model.ALPHANUMERIC_USERNAME
             )
             return
-        elif not self.register_password.value.isalnum():
+        elif (not self.register_password.value.isalnum()) or ' ' in self.register_password.value:
             await interaction.response.send_message(
                 self.locale_model.ALPHANUMERIC_PASSWORD
             )
@@ -121,7 +121,7 @@ class ChangePassword(Modal):
                 self.locale_model.PASSWORD_MISSMATCH
             )
             return
-        elif not self.password.value.isalnum():
+        elif (not self.password.value.isalnum()) or ' ' in self.password.value:
             await interaction.response.send_message(
                 self.locale_model.ALPHANUMERIC_PASSWORD
             )
