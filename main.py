@@ -398,7 +398,7 @@ async def shutdown():
     await bot.close()
 
 
-if __name__ == '__main__':
+def run():
     loop = asyncio.get_event_loop()
     webhook_server = uvicorn.Server(
         config=uvicorn.Config(
@@ -410,3 +410,7 @@ if __name__ == '__main__':
         )
     )
     loop.run_until_complete(webhook_server.serve())
+
+
+if __name__ == '__main__':
+    run()
