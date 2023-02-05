@@ -26,7 +26,7 @@ from io import BytesIO
 
 from config import *
 import api
-from activates import (
+from activities import (
     Register
 )
 from locales import (
