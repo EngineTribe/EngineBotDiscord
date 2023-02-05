@@ -60,6 +60,12 @@ class LocaleModel(BaseModel):
     QUERY_DESC: str
     QUERY_ARG1: str
     QUERY_ARG1_DESC: str
+    BAN: str
+    BAN_DESC: str
+    UNBAN: str
+    UNBAN_DESC: str
+    BAN_SUCCESS: str
+    UNBAN_SUCCESS: str
 
 
 locales: dict[str, LocaleModel] = {}

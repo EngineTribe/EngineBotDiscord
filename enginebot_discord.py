@@ -223,7 +223,7 @@ async def update_permission(
     )
     if 'error_type' in response_json:
         await interaction.send(
-            locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} {response_json['message']}"
+            locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} - {response_json['message']}"
         )
     else:
         await interaction.send(
@@ -299,6 +299,72 @@ async def query_level(
     await interaction.send(
         level_details_to_string(level, locale_model)
     )
+
+
+@bot.slash_command(
+    name="ban",
+    name_localizations=discord_localizations('BAN'),
+    description="🔨 Ban user.",
+    description_localizations=discord_localizations('BAN_DESC'),
+    guild_ids=GUILD_IDS
+)
+async def ban_user(
+        interaction: Interaction,
+        user_identifier: str = SlashOption(
+            name="user_identifier",
+            name_localizations=discord_localizations('PERMISSION_ARG1'),
+            description="🔨 User identifier",
+            description_localizations=discord_localizations('PERMISSION_ARG1_DESC'),
+            required=True
+        )
+):
+    locale_model = get_locale_model(interaction.user.roles)
+    response_json = await api.update_permission(
+        user_identifier=user_identifier,
+        permission='banned',
+        value=True
+    )
+    if 'error_type' in response_json:
+        await interaction.send(
+            locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} - {response_json['message']}"
+        )
+    else:
+        await interaction.send(
+            locale_model.BAN_SUCCESS
+        )
+
+
+@bot.slash_command(
+    name="unban",
+    name_localizations=discord_localizations('UNBAN'),
+    description="🔓 Unban user.",
+    description_localizations=discord_localizations('UNBAN_DESC'),
+    guild_ids=GUILD_IDS
+)
+async def unban_user(
+        interaction: Interaction,
+        user_identifier: str = SlashOption(
+            name="user_identifier",
+            name_localizations=discord_localizations('PERMISSION_ARG1'),
+            description="🔓 User identifier",
+            description_localizations=discord_localizations('PERMISSION_ARG1_DESC'),
+            required=True
+        )
+):
+    locale_model = get_locale_model(interaction.user.roles)
+    response_json = await api.update_permission(
+        user_identifier=user_identifier,
+        permission='banned',
+        value=False
+    )
+    if 'error_type' in response_json:
+        await interaction.send(
+            locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} - {response_json['message']}"
+        )
+    else:
+        await interaction.send(
+            locale_model.UNBAN_SUCCESS
+        )
 
 
 @bot.event
