@@ -13,5 +13,5 @@ pip install -r requirements.txt
 ### Usage
 
 ```bash
-python -m main
+python3 -m enginebot_discord
 ```
