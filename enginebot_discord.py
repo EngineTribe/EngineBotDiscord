@@ -451,10 +451,12 @@ async def set_rich_presence_timer():
     delay: int = 30
     await bot.wait_until_ready()
     while True:
-        await change_presence(ActivityType.competing, "SMM:WE v3.3.3")
-        await change_presence(ActivityType.playing, "Creating awesome levels in SMM:WE")
-        await change_presence(ActivityType.watching, "How nice the Staff is UwU")
-        await change_presence(ActivityType.competing, "Engine Bot vs Coursebot", Status.do_not_disturb)
+        for activity in RICH_PRESENCE_ACTIVITIES:
+            await change_presence(
+                activity_type=ActivityType[activity['type']],
+                name=activity['name'],
+                status=activity['status']
+            )
         await change_presence(ActivityType.watching, f"{bot.get_guild(GUILD_IDS[0]).member_count} members")
 
 
@@ -462,7 +464,8 @@ async def set_rich_presence_timer():
 async def startup():
     print('Starting Discord bot...')
     asyncio.create_task(bot.start(BOT_TOKEN))
-    asyncio.create_task(set_rich_presence_timer())
+    if RICH_PRESENCE_ENABLED:
+        asyncio.create_task(set_rich_presence_timer())
 
 
 @app.on_event('shutdown')

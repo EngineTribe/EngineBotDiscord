@@ -13,6 +13,8 @@ LEVEL_POST_CHANNEL_ID = _config['bot']['level_post_channel_id']
 BOOSTER_ROLE_ID = _config['bot']['booster_role_id']
 STAGE_MODERATOR_ROLE_ID = _config['bot']['stage_moderator_role_id']
 MEMBER_ROLE_ID = _config['bot']['member_role_id']
+RICH_PRESENCE_ENABLED = _config['bot']['rich_presence']['enabled']
+RICH_PRESENCE_ACTIVITIES = _config['bot']['rich_presence']['activities']
 
 API_HOST = _config['enginetribe_api']['host']
 API_KEY = _config['enginetribe_api']['api_key']
