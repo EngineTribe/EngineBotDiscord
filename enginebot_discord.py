@@ -27,7 +27,8 @@ from io import BytesIO
 from config import *
 import api
 from activities import (
-    Register
+    Register,
+    ChangePassword
 )
 from locales import (
     get_locale_model,
@@ -80,8 +81,10 @@ async def change_password(interaction: Interaction):
             locale_model.NOT_REGISTERED
         )
     else:
-        await interaction.send(
-            locale_model.UNKNOWN_ERROR
+        await interaction.response.send_modal(
+            ChangePassword(
+                locale_model=locale_model
+            )
         )
 
 
