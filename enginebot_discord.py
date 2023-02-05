@@ -270,7 +270,7 @@ async def random_level(
 ):
     locale_model = get_locale_model(interaction.user.roles)
     auth_code = await login_session(interaction.user.roles)
-    level = await api.random_level(auth_code=auth_code, difficulty=difficulty)
+    level = (await api.random_level(auth_code=auth_code, difficulty=difficulty))['result']
     await interaction.send(
         level_details_to_string(level, locale_model)
     )
@@ -296,9 +296,14 @@ async def query_level(
     locale_model = get_locale_model(interaction.user.roles)
     auth_code = await login_session(interaction.user.roles)
     level = await api.query_level(auth_code=auth_code, level_id=level_id)
-    await interaction.send(
-        level_details_to_string(level, locale_model)
-    )
+    if 'error_type' in level:
+        await interaction.send(
+            f"❌ {level['error_type']} - {level['message']}"
+        )
+    else:
+        await interaction.send(
+            level_details_to_string(level, locale_model)
+        )
 
 
 @bot.slash_command(
