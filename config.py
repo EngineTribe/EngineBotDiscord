@@ -1,6 +1,8 @@
 import yaml
+import os
 
-_config = yaml.safe_load(open('config.yml'))
+config_path = os.getenv('CONFIG_PATH', 'config.yml')
+_config = yaml.safe_load(open(config_path, 'r'))
 
 WEBSITE_URL = "https://web.enginetribe.gq/"
 

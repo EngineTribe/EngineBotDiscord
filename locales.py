@@ -64,8 +64,9 @@ class LocaleModel(BaseModel):
 
 locales: dict[str, LocaleModel] = {}
 
-for locale_file in os.listdir('locales'):
-    with open(f'locales/{locale_file}') as file:
+locales_dir = os.getenv('LOCALES_DIR', 'locales')
+for locale_file in os.listdir(locales_dir):
+    with open(f'{locales_dir}/{locale_file}') as file:
         locales[locale_file.replace('.yml', '')] = LocaleModel.parse_obj(yaml.safe_load(file))
 
 
