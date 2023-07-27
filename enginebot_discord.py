@@ -52,6 +52,7 @@ async def on_ready():
     guild_ids=GUILD_IDS,
 )
 async def register(interaction: Interaction):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
     if 'error_type' in user_info_response:
@@ -74,6 +75,7 @@ async def register(interaction: Interaction):
     guild_ids=GUILD_IDS,
 )
 async def change_password(interaction: Interaction):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
     if 'error_type' in user_info_response:
@@ -105,6 +107,7 @@ async def levels(
             required=False
         )
 ):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     user_identifier: str = str(interaction.user.id) if user_identifier is None else user_identifier
     response_texts: list[str] = []
@@ -163,6 +166,7 @@ async def levels(
     guild_ids=GUILD_IDS
 )
 async def server_stats(interaction: Interaction):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     stats = await api.server_stats()
     await interaction.send(
@@ -218,6 +222,7 @@ async def update_permission(
             }
         )
 ):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     response_json = await api.update_permission(
         user_identifier=user_identifier,
@@ -271,6 +276,7 @@ async def random_level(
             }
         )
 ):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     auth_code = await login_session(interaction.user.roles)
     level = (await api.random_level(auth_code=auth_code, difficulty=difficulty))['result']
@@ -296,6 +302,7 @@ async def query_level(
             required=True
         )
 ):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     auth_code = await login_session(interaction.user.roles)
     level = await api.query_level(auth_code=auth_code, level_id=level_id)
@@ -326,6 +333,7 @@ async def ban_user(
             required=True
         )
 ):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     response_json = await api.update_permission(
         user_identifier=user_identifier,
@@ -359,6 +367,7 @@ async def unban_user(
             required=True
         )
 ):
+    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     response_json = await api.update_permission(
         user_identifier=user_identifier,
