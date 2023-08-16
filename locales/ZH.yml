@@ -19,7 +19,7 @@ NOT_REGISTERED: '❌ 你还没有注册账号。'
 UPLOADS: "📤 上传数: "
 STAGE_MODERATOR: "👮‍ 关卡管理员"
 BOOSTER: "🚀 捐赠者"
-LOADING: "加载中..."
+LOADING: "🚀 加载中..."
 PASSWORD_CHANGE_SUCCESS: "✅ 密码修改成功。"
 UNKNOWN_USER: "❌ 未知用户。"
 CHANGE_PASSWORD: "change_password"

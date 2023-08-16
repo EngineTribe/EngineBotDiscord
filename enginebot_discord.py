@@ -36,7 +36,11 @@ from locales import (
     discord_localizations
 )
 
-bot = commands.Bot(intents=nextcord.Intents.all(), command_prefix='/')
+bot = commands.Bot(
+    intents=nextcord.Intents.all(),
+    command_prefix='/',
+    default_guild_ids=GUILD_IDS
+)
 
 
 @bot.event
@@ -49,22 +53,14 @@ async def on_ready():
     name_localizations=discord_localizations('REGISTER'),
     description="📝 Register to start playing SMM:WE.",
     description_localizations=discord_localizations('REGISTER_DESC'),
-    guild_ids=GUILD_IDS,
 )
 async def register(interaction: Interaction):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
-    user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' in user_info_response:
-        await interaction.response.send_modal(
-            Register(
-                locale_model=locale_model
-            )
+    await interaction.response.send_modal(
+        Register(
+            locale_model=locale_model
         )
-    else:
-        await interaction.send(
-            locale_model.ALREADY_REGISTERED
-        )
+    )
 
 
 @bot.slash_command(
@@ -72,22 +68,14 @@ async def register(interaction: Interaction):
     name_localizations=discord_localizations('CHANGE_PASSWORD'),
     description="🔐 Change your password.",
     description_localizations=discord_localizations('CHANGE_PASSWORD_DESC'),
-    guild_ids=GUILD_IDS,
 )
 async def change_password(interaction: Interaction):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
-    user_info_response = await api.user_info(user_identifier=str(interaction.user.id))
-    if 'error_type' in user_info_response:
-        await interaction.send(
-            locale_model.NOT_REGISTERED
+    await interaction.response.send_modal(
+        ChangePassword(
+            locale_model=locale_model
         )
-    else:
-        await interaction.response.send_modal(
-            ChangePassword(
-                locale_model=locale_model
-            )
-        )
+    )
 
 
 @bot.slash_command(
@@ -107,15 +95,17 @@ async def levels(
             required=False
         )
 ):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
     user_identifier: str = str(interaction.user.id) if user_identifier is None else user_identifier
     response_texts: list[str] = []
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     user_info_response = await api.user_info(
         user_identifier=user_identifier
     )
     if 'result' not in user_info_response:
-        await interaction.send(
+        await message.edit(
             locale_model.NOT_REGISTERED
         )
     else:
@@ -133,9 +123,9 @@ async def levels(
             locale_model.LOADING
         )
 
-        message = (await interaction.send(
+        await message.edit(
             content='\n'.join(response_texts)
-        ))
+        )
         response_texts.pop()
 
         username = user_info['username']
@@ -163,13 +153,14 @@ async def levels(
     name_localizations=discord_localizations('SERVER_STATS'),
     description="📊 Get server stats.",
     description_localizations=discord_localizations('SERVER_STATS_DESC'),
-    guild_ids=GUILD_IDS
 )
 async def server_stats(interaction: Interaction):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     stats = await api.server_stats()
-    await interaction.send(
+    await message.edit(
         f'{locale_model.SERVER_STATS_TITLE}\n'
         f'> {locale_model.SERVER_STATS_OS_VERSION} {stats.os}\n'
         f'> {locale_model.SERVER_STATS_PYTHON_VERSION} {stats.python}\n'
@@ -185,7 +176,6 @@ async def server_stats(interaction: Interaction):
     name_localizations=discord_localizations('PERMISSION'),
     description="🔒 Change user's permission.",
     description_localizations=discord_localizations('PERMISSION_DESC'),
-    guild_ids=GUILD_IDS
 )
 async def update_permission(
         interaction: Interaction,
@@ -222,19 +212,21 @@ async def update_permission(
             }
         )
 ):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     response_json = await api.update_permission(
         user_identifier=user_identifier,
         permission=permission,
         value=value
     )
     if 'error_type' in response_json:
-        await interaction.send(
+        await message.edit(
             locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} - {response_json['message']}"
         )
     else:
-        await interaction.send(
+        await message.edit(
             locale_model.PERMISSION_SUCCESS
         )
 
@@ -258,7 +250,6 @@ def level_details_to_string(level: dict, locale_model) -> str:
     name_localizations=discord_localizations('RANDOM'),
     description="🎲 Get random level.",
     description_localizations=discord_localizations('RANDOM_DESC'),
-    guild_ids=GUILD_IDS
 )
 async def random_level(
         interaction: Interaction,
@@ -276,11 +267,13 @@ async def random_level(
             }
         )
 ):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     auth_code = await login_session(interaction.user.roles)
     level = (await api.random_level(auth_code=auth_code, difficulty=difficulty))['result']
-    await interaction.send(
+    await message.edit(
         level_details_to_string(level, locale_model)
     )
 
@@ -290,7 +283,6 @@ async def random_level(
     name_localizations=discord_localizations('QUERY'),
     description="🔍 Query level.",
     description_localizations=discord_localizations('QUERY_DESC'),
-    guild_ids=GUILD_IDS
 )
 async def query_level(
         interaction: Interaction,
@@ -302,16 +294,18 @@ async def query_level(
             required=True
         )
 ):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     auth_code = await login_session(interaction.user.roles)
     level = await api.query_level(auth_code=auth_code, level_id=level_id)
     if 'error_type' in level:
-        await interaction.send(
+        await message.edit(
             f"❌ {level['error_type']} - {level['message']}"
         )
     else:
-        await interaction.send(
+        await message.edit(
             level_details_to_string(level, locale_model)
         )
 
@@ -321,7 +315,6 @@ async def query_level(
     name_localizations=discord_localizations('BAN'),
     description="🔨 Ban user.",
     description_localizations=discord_localizations('BAN_DESC'),
-    guild_ids=GUILD_IDS
 )
 async def ban_user(
         interaction: Interaction,
@@ -333,19 +326,21 @@ async def ban_user(
             required=True
         )
 ):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     response_json = await api.update_permission(
         user_identifier=user_identifier,
         permission='banned',
         value=True
     )
     if 'error_type' in response_json:
-        await interaction.send(
+        await message.edit(
             locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} - {response_json['message']}"
         )
     else:
-        await interaction.send(
+        await message.edit(
             locale_model.BAN_SUCCESS
         )
 
@@ -355,7 +350,6 @@ async def ban_user(
     name_localizations=discord_localizations('UNBAN'),
     description="🔓 Unban user.",
     description_localizations=discord_localizations('UNBAN_DESC'),
-    guild_ids=GUILD_IDS
 )
 async def unban_user(
         interaction: Interaction,
@@ -367,19 +361,21 @@ async def unban_user(
             required=True
         )
 ):
-    await interaction.response.defer()
     locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(
+        locale_model.LOADING
+    )
     response_json = await api.update_permission(
         user_identifier=user_identifier,
         permission='banned',
         value=False
     )
     if 'error_type' in response_json:
-        await interaction.send(
+        await message.edit(
             locale_model.PERMISSION_FAILED + '\n' + f"{response_json['error_type']} - {response_json['message']}"
         )
     else:
-        await interaction.send(
+        await message.edit(
             locale_model.UNBAN_SUCCESS
         )
 

@@ -142,7 +142,7 @@ class ChangePassword(Modal):
                 else:
                     if response_json['error_type'] == '006':
                         await interaction.send(
-                            self.locale_model.UNKNOWN_USER
+                            self.locale_model.NOT_REGISTERED
                         )
                     else:
                         await interaction.send(

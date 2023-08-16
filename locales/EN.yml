@@ -19,7 +19,7 @@ NOT_REGISTERED: '❌ You are not registered yet.'
 UPLOADS: "📤 Uploads: "
 STAGE_MODERATOR: "👮 Stage Moderator"
 BOOSTER: "🚀 Booster"
-LOADING: "Loading..."
+LOADING: "🚀 Loading..."
 PASSWORD_CHANGE_SUCCESS: "✅ Password changed successfully."
 UNKNOWN_USER: "❌ Unknown user."
 CHANGE_PASSWORD: "change_password"

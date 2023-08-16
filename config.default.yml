@@ -1,7 +1,9 @@
 bot:
   token: 'Y0UR_B0T_T0K3N'
   guild_ids:
-    - 10001  # Enabled guilds
+    # Enabled guilds
+    # First guild id is default
+    - 10001
   level_post_channel_id: 10001
   locale_ids:
     EN: 10001

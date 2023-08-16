@@ -76,7 +76,9 @@ async def login_session(
                 'User-Agent': 'EngineBot'
             }
     ) as response:
-        return (await response.json())['auth_code']
+        auth_code = (await response.json())['auth_code']
+        print('Session #' + auth_code)
+        return auth_code
 
 
 async def get_user_levels(
