@@ -426,7 +426,8 @@ async def upload_level(
                     description=f'Author: **{request_body.level_author}** '
                                 f'{author.mention if author is not None else ""}\n'
                                 f'ID: `{request_body.level_id}`\n'
-                                f'Etiquetas: `{request_body.level_tags}`'
+                                f'Etiquetas: `{request_body.level_tags}`\n'
+                                f'Descripción: `{request_body.description}`'
                 )
             ]
         )

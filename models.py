@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional as Opt
 
 
 class UploadRequestBody(BaseModel):
@@ -8,6 +9,7 @@ class UploadRequestBody(BaseModel):
     level_author: str
     level_author_im_id: int
     level_tags: str
+    description: Opt[str] = 'Sin descripción'
 
 
 class UploadResponseBody(BaseModel):
