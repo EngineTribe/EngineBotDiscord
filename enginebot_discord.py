@@ -127,7 +127,7 @@ async def levels(
         response_texts.pop()
 
         username = user_info['username']
-        auth_code = await login_session(interaction.user.roles)
+        auth_code = await login_session(interaction.user)
         levels = await api.get_user_levels(
             username=username,
             auth_code=auth_code,
@@ -263,7 +263,7 @@ async def random_level(
 ):
     message = await interaction.send(LOADING)
     locale_model = get_locale_model(interaction.user)
-    auth_code = await login_session(interaction.user.roles)
+    auth_code = await login_session(interaction.user)
     level = (await api.random_level(auth_code=auth_code, difficulty=difficulty))['result']
     await message.edit(
         level_details_to_string(level, locale_model)
@@ -288,7 +288,7 @@ async def query_level(
 ):
     message = await interaction.send(LOADING)
     locale_model = get_locale_model(interaction.user)
-    auth_code = await login_session(interaction.user.roles)
+    auth_code = await login_session(interaction.user)
     level = await api.query_level(auth_code=auth_code, level_id=level_id)
     if 'error_type' in level:
         await message.edit(

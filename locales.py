@@ -86,10 +86,10 @@ for locale_file in os.listdir(locales_dir):
         locales[locale_file.replace('.yml', '')] = LocaleModel.parse_obj(yaml.safe_load(file))
 
 
-def get_locale_model(user) -> LocaleModel:
+def get_locale_id(user) -> str:
     user_id = user.id
     if user_id in user_locales:
-        return locales[user_locales[user_id]]
+        return user_locales[user_id]
     else:
         locale = 'ES'
         role_ids = map(lambda role: role.id, user.roles)
@@ -97,15 +97,15 @@ def get_locale_model(user) -> LocaleModel:
             if LOCALE_IDS[locale] in role_ids:
                 break
         user_locales[user_id] = locale
-        return locales[locale]
+        return locale
 
 
-async def login_session(roles: list) -> str:
-    role_ids = map(lambda role: role.id, roles)
-    locale = 'ES'
-    for locale in API_TOKENS:
-        if API_TOKENS[locale] in role_ids:
-            break
+def get_locale_model(user) -> LocaleModel:
+    return locales[get_locale_id(user)]
+
+
+async def login_session(user) -> str:
+    locale = get_locale_id(user)
     if locale in auth_code:
         if datetime.now() > auth_code_expires[locale] + expire:
             # session expired, renew
