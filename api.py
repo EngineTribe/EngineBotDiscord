@@ -77,7 +77,6 @@ async def login_session(
             }
     ) as response:
         auth_code = (await response.json())['auth_code']
-        print('Session #' + auth_code)
         return auth_code
 
 

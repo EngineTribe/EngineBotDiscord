@@ -1,8 +1,16 @@
 from pydantic import BaseModel
 import os
 import yaml
+from functools import lru_cache
 from config import LOCALE_IDS, API_TOKENS
 from api import login_session as api_login_session
+from datetime import datetime
+from context import (
+    auth_code,
+    auth_code_expires,
+    expire,
+    user_locales
+)
 
 
 class LocaleModel(BaseModel):
@@ -78,22 +86,39 @@ for locale_file in os.listdir(locales_dir):
         locales[locale_file.replace('.yml', '')] = LocaleModel.parse_obj(yaml.safe_load(file))
 
 
-def get_locale_model(roles: list) -> LocaleModel:
-    role_ids = map(lambda role: role.id, roles)
-    for locale in LOCALE_IDS:
-        if LOCALE_IDS[locale] in role_ids:
-            return locales[locale]
-    return locales['ES']
+def get_locale_model(user) -> LocaleModel:
+    user_id = user.id
+    if user_id in user_locales:
+        return locales[user_locales[user_id]]
+    else:
+        locale = 'ES'
+        role_ids = map(lambda role: role.id, user.roles)
+        for locale in LOCALE_IDS:
+            if LOCALE_IDS[locale] in role_ids:
+                break
+        user_locales[user_id] = locale
+        return locales[locale]
 
 
 async def login_session(roles: list) -> str:
     role_ids = map(lambda role: role.id, roles)
+    locale = 'ES'
     for locale in API_TOKENS:
         if API_TOKENS[locale] in role_ids:
-            return await api_login_session(API_TOKENS[locale])
-    return await api_login_session(API_TOKENS['ES'])
+            break
+    if locale in auth_code:
+        if datetime.now() > auth_code_expires[locale] + expire:
+            # session expired, renew
+            auth_code[locale] = await api_login_session(API_TOKENS[locale])
+            auth_code_expires[locale] = datetime.now() + expire
+        return auth_code[locale]
+    else:
+        auth_code_expires[locale] = datetime.now() + expire
+        auth_code[locale] = await api_login_session(API_TOKENS[locale])
+        return auth_code[locale]
 
 
+@lru_cache
 def discord_localizations(word: str) -> dict[str:str]:
     localizations = {}
     for locale in locales:

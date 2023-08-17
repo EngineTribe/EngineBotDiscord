@@ -42,6 +42,7 @@ bot = commands.Bot(
     default_guild_ids=GUILD_IDS
 )
 
+LOADING: str = '⏰ Cargando...'
 
 @bot.event
 async def on_ready():
@@ -55,7 +56,7 @@ async def on_ready():
     description_localizations=discord_localizations('REGISTER_DESC'),
 )
 async def register(interaction: Interaction):
-    locale_model = get_locale_model(interaction.user.roles)
+    locale_model = get_locale_model(interaction.user)
     await interaction.response.send_modal(
         Register(
             locale_model=locale_model
@@ -70,7 +71,7 @@ async def register(interaction: Interaction):
     description_localizations=discord_localizations('CHANGE_PASSWORD_DESC'),
 )
 async def change_password(interaction: Interaction):
-    locale_model = get_locale_model(interaction.user.roles)
+    locale_model = get_locale_model(interaction.user)
     await interaction.response.send_modal(
         ChangePassword(
             locale_model=locale_model
@@ -95,12 +96,10 @@ async def levels(
             required=False
         )
 ):
-    locale_model = get_locale_model(interaction.user.roles)
+    message = await interaction.send(LOADING)
+    locale_model = get_locale_model(interaction.user)
     user_identifier: str = str(interaction.user.id) if user_identifier is None else user_identifier
     response_texts: list[str] = []
-    message = await interaction.send(
-        locale_model.LOADING
-    )
     user_info_response = await api.user_info(
         user_identifier=user_identifier
     )
@@ -155,10 +154,8 @@ async def levels(
     description_localizations=discord_localizations('SERVER_STATS_DESC'),
 )
 async def server_stats(interaction: Interaction):
-    locale_model = get_locale_model(interaction.user.roles)
-    message = await interaction.send(
-        locale_model.LOADING
-    )
+    message = await interaction.send(LOADING)
+    locale_model = get_locale_model(interaction.user)
     stats = await api.server_stats()
     await message.edit(
         f'{locale_model.SERVER_STATS_TITLE}\n'
@@ -212,10 +209,8 @@ async def update_permission(
             }
         )
 ):
-    locale_model = get_locale_model(interaction.user.roles)
-    message = await interaction.send(
-        locale_model.LOADING
-    )
+    message = await interaction.send(LOADING)
+    locale_model = get_locale_model(interaction.user)
     response_json = await api.update_permission(
         user_identifier=user_identifier,
         permission=permission,
@@ -267,10 +262,8 @@ async def random_level(
             }
         )
 ):
-    locale_model = get_locale_model(interaction.user.roles)
-    message = await interaction.send(
-        locale_model.LOADING
-    )
+    message = await interaction.send(LOADING)
+    locale_model = get_locale_model(interaction.user)
     auth_code = await login_session(interaction.user.roles)
     level = (await api.random_level(auth_code=auth_code, difficulty=difficulty))['result']
     await message.edit(
@@ -294,10 +287,8 @@ async def query_level(
             required=True
         )
 ):
-    locale_model = get_locale_model(interaction.user.roles)
-    message = await interaction.send(
-        locale_model.LOADING
-    )
+    message = await interaction.send(LOADING)
+    locale_model = get_locale_model(interaction.user)
     auth_code = await login_session(interaction.user.roles)
     level = await api.query_level(auth_code=auth_code, level_id=level_id)
     if 'error_type' in level:
@@ -326,7 +317,7 @@ async def ban_user(
             required=True
         )
 ):
-    locale_model = get_locale_model(interaction.user.roles)
+    locale_model = get_locale_model(interaction.user)
     message = await interaction.send(
         locale_model.LOADING
     )
@@ -361,7 +352,7 @@ async def unban_user(
             required=True
         )
 ):
-    locale_model = get_locale_model(interaction.user.roles)
+    locale_model = get_locale_model(interaction.user)
     message = await interaction.send(
         locale_model.LOADING
     )
