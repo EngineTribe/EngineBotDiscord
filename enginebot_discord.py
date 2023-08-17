@@ -16,8 +16,7 @@ from typing import Optional
 import asyncio
 
 from fastapi import FastAPI
-import uvicorn, contextlib, time
-from threading import Thread
+import uvicorn
 from models import (
     UploadRequestBody,
     UploadResponseBody

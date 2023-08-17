@@ -76,7 +76,10 @@ async def login_session(
                 'User-Agent': 'EngineBot'
             }
     ) as response:
-        auth_code = (await response.json())['auth_code']
+        try:
+            auth_code = (await response.json())['auth_code']
+        except KeyError:
+            raise Exception(await response.text())
         return auth_code
 
 
