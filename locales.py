@@ -110,11 +110,11 @@ async def login_session(user) -> str:
         if datetime.now() > auth_code_expires[locale] + expire:
             # session expired, renew
             auth_code[locale] = await api_login_session(API_TOKENS[locale])
-            auth_code_expires[locale] = datetime.now() + expire
+            auth_code_expires[locale] = datetime.now()
         return auth_code[locale]
     else:
-        auth_code_expires[locale] = datetime.now() + expire
         auth_code[locale] = await api_login_session(API_TOKENS[locale])
+        auth_code_expires[locale] = datetime.now()
         return auth_code[locale]
 
 
