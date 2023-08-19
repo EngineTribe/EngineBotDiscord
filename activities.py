@@ -12,6 +12,7 @@ import api
 from utils import (
     calculate_password_hash
 )
+from context import LOADING
 
 
 class Register(Modal):
@@ -44,18 +45,19 @@ class Register(Modal):
         self.add_item(self.register_confirm_password)
 
     async def callback(self, interaction: Interaction):
+        message = await interaction.send(LOADING)
         if self.register_password.value != self.register_confirm_password.value:
-            await interaction.response.send_message(
+            await message.edit(
                 self.locale_model.PASSWORD_MISSMATCH
             )
             return
         elif (not self.register_username.value.isalnum()) or ' ' in self.register_username.value:
-            await interaction.response.send_message(
+            await message.edit(
                 self.locale_model.ALPHANUMERIC_USERNAME
             )
             return
         elif (not self.register_password.value.isalnum()) or ' ' in self.register_password.value:
-            await interaction.response.send_message(
+            await message.edit(
                 self.locale_model.ALPHANUMERIC_PASSWORD
             )
             return
@@ -69,26 +71,26 @@ class Register(Modal):
                     )
                 )
                 if 'success' in response_json:
-                    await interaction.send(
+                    await message.edit(
                         f'✅ **{self.register_username.value}** {self.locale_model.REGISTER_SUCCESS}'
                     )
                 else:
                     if response_json['error_type'] == '035':
-                        await interaction.send(
+                        await message.edit(
                             f'{self.locale_model.ALREADY_REGISTERED}'
                             f'{self.locale_model.YOUR_USERNAME_IS} **{response_json["username"]}**'
                         )
                     elif response_json['error_type'] == '036':
-                        await interaction.send(
+                        await message.edit(
                             self.locale_model.USERNAME_ALREADY_TAKEN
                         )
                     else:
-                        await interaction.send(
+                        await message.edit(
                             self.locale_model.UNKNOWN_ERROR + '\n' +
                             f"{response_json['error_type']} - {response_json['message']}"
                         )
             except Exception as e:
-                await interaction.send(
+                await message.edit(
                     self.locale_model.UNKNOWN_ERROR + '\n' + str(e)
                 )
 
@@ -116,13 +118,14 @@ class ChangePassword(Modal):
         self.add_item(self.confirm_password)
 
     async def callback(self, interaction: Interaction):
+        message = await interaction.send(LOADING)
         if self.password.value != self.confirm_password.value:
-            await interaction.response.send_message(
+            await message.edit(
                 self.locale_model.PASSWORD_MISSMATCH
             )
             return
         elif (not self.password.value.isalnum()) or ' ' in self.password.value:
-            await interaction.response.send_message(
+            await message.edit(
                 self.locale_model.ALPHANUMERIC_PASSWORD
             )
             return
@@ -136,20 +139,20 @@ class ChangePassword(Modal):
                     )
                 )
                 if 'success' in response_json:
-                    await interaction.send(
+                    await message.edit(
                         self.locale_model.PASSWORD_CHANGE_SUCCESS
                     )
                 else:
                     if response_json['error_type'] == '006':
-                        await interaction.send(
+                        await message.edit(
                             self.locale_model.NOT_REGISTERED
                         )
                     else:
-                        await interaction.send(
+                        await message.edit(
                             self.locale_model.UNKNOWN_ERROR + '\n' +
                             f"{response_json['error_type']} - {response_json['message']}"
                         )
             except Exception as e:
-                await interaction.send(
+                await message.edit(
                     self.locale_model.UNKNOWN_ERROR + '\n' + str(e)
                 )

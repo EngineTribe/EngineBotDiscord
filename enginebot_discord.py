@@ -34,6 +34,7 @@ from locales import (
     login_session,
     discord_localizations
 )
+from context import LOADING
 
 bot = commands.Bot(
     intents=nextcord.Intents.all(),
@@ -41,7 +42,6 @@ bot = commands.Bot(
     default_guild_ids=GUILD_IDS
 )
 
-LOADING: str = '⏰ Cargando...'
 
 @bot.event
 async def on_ready():
